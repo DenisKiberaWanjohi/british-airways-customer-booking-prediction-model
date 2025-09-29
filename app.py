@@ -1,3 +1,4 @@
+# app.py
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -15,8 +16,11 @@ FEATURE_INFO_PATH = MODEL_DIR / "feature_info.json"
 st.set_page_config(page_title="BA Booking Prediction", page_icon="🧠", layout="wide")
 st.title("British Airways Booking Prediction")
 
-def field_help(schema: FeatureSchema, col: str):
+def desc(schema: FeatureSchema, col: str) -> str:
     return getattr(schema, "descriptions", {}).get(col, "")
+
+def hint(schema: FeatureSchema, col: str) -> dict:
+    return getattr(schema, "ui_hints", {}).get(col, {})
 
 if not PIPELINE_PATH.exists() or not FEATURE_INFO_PATH.exists():
     st.info("Model artifacts not found. Train the model first by running `python -m src.train_pipeline`.")
@@ -24,8 +28,8 @@ else:
     pipe = load_pipeline(PIPELINE_PATH)
     schema = FeatureSchema.load(FEATURE_INFO_PATH)
 
-    numeric_cols = list(schema.numeric)
-    categorical_cols = list(schema.categorical)
+    numeric = list(schema.numeric)
+    categorical = list(schema.categorical)
 
     tab1, tab2 = st.tabs(["Single prediction", "Batch from CSV"])
 
@@ -35,24 +39,37 @@ else:
         inputs = {}
 
         with left:
-            for col in numeric_cols:
-                inputs[col] = st.number_input(
-                    label=col,
-                    value=0.0,
-                    step=1.0,
-                    help=field_help(schema, col),
-                )
-        with right:
-            for col in categorical_cols:
-                opts = getattr(schema, "categorical_options", {}).get(col, [])
-                desc = field_help(schema, col)
-                if isinstance(opts, list) and len(opts) > 0:
-                    inputs[col] = st.selectbox(col, options=opts, help=desc)
+            # numeric and binary
+            for col in numeric:
+                h = hint(schema, col)
+                kind = h.get("kind", "float")
+                if col == "flight_hour" or (kind == "int" and h.get("min") == 0 and h.get("max") == 23):
+                    val = st.slider(col, min_value=0, max_value=23, value=0, help=desc(schema, col))
+                    inputs[col] = int(val)
+                elif kind == "int":
+                    val = st.number_input(col, value=0, step=1, help=desc(schema, col))
+                    inputs[col] = int(val)
+                elif kind == "binary":
+                    val = st.checkbox(col + " (check for Yes)", value=False, help=desc(schema, col))
+                    inputs[col] = 1 if val else 0
                 else:
-                    inputs[col] = st.text_input(col, value="", help=desc)
+                    val = st.number_input(col, value=0.0, step=0.1, help=desc(schema, col))
+                    inputs[col] = float(val)
+
+        with right:
+            # categoricals as dropdowns
+            for col in categorical:
+                opts = getattr(schema, "categorical_options", {}).get(col, [])
+                if len(opts) == 0:
+                    # fallback to text when no options are stored
+                    inputs[col] = st.text_input(col, value="", help=desc(schema, col))
+                else:
+                    # ensure string options and sorted for stability
+                    opts = sorted([str(x) for x in opts])
+                    inputs[col] = st.selectbox(col, options=opts, help=desc(schema, col))
 
         if st.button("Predict"):
-            X = prepare_inference_df(inputs, numeric_cols, categorical_cols)
+            X = prepare_inference_df(inputs, numeric, categorical)
             pred = int(pipe.predict(X)[0])
             proba = getattr(pipe, "predict_proba", lambda X: None)(X)
 
@@ -61,7 +78,7 @@ else:
                 pos_index = schema.class_labels.index(1) if 1 in schema.class_labels else 1
                 pos_prob = float(proba[0][pos_index])
                 message = "The customer is likely to complete the booking." if pred == 1 else "The customer is unlikely to complete the booking."
-                st.markdown(f"**{message}**  (estimated probability of completion: {pos_prob:.2%})")
+                st.markdown(f"**{message}**  (Estimated probability of completion: {pos_prob:.2%})")
             else:
                 st.markdown("**Predicted class:** " + str(pred))
 
@@ -69,9 +86,9 @@ else:
                 probs = proba[0]
                 labels = [str(c) for c in schema.class_labels]
                 fig = plt.figure()
-                plt.pie(probs, labels=labels, autopct='%1.1f%%', startangle=90)
+                plt.pie(probs, labels=labels, autopct="%1.1f%%", startangle=90)
                 plt.title("Prediction probabilities")
-                plt.axis('equal')
+                plt.axis("equal")
                 st.pyplot(fig)
 
     with tab2:
@@ -79,7 +96,7 @@ else:
         f = st.file_uploader("CSV file", type=["csv"])
         if f:
             df = pd.read_csv(f)
-            df = enforce_types(df, numeric_cols, categorical_cols)
+            df = enforce_types(df, numeric, categorical)
             st.dataframe(df.head())
 
             preds = pipe.predict(df)
@@ -91,16 +108,10 @@ else:
 
             st.subheader("Prediction distribution")
             counts = pd.Series(preds).value_counts().sort_index()
-            sizes = counts.values
-            labels = [str(k) for k in counts.index]
             fig2 = plt.figure()
-            plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+            plt.pie(counts.values, labels=[str(k) for k in counts.index], autopct="%1.1f%%", startangle=90)
             plt.title("Predicted class share")
-            plt.axis('equal')
+            plt.axis("equal")
             st.pyplot(fig2)
 
-            st.download_button(
-                "Download predictions",
-                data=out.to_csv(index=False).encode("utf-8"),
-                file_name="predictions.csv",
-            )
+            st.download_button("Download predictions", data=out.to_csv(index=False).encode("utf-8"), file_name="predictions.csv")
