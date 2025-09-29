@@ -1,0 +1,22 @@
+{
+  "numeric": [
+    "age",
+    "advance_purchase_days",
+    "basket_price",
+    "seats",
+    "weekend",
+    "previous_cancellations"
+  ],
+  "categorical": [
+    "trip_type",
+    "channel",
+    "country",
+    "loyalty_status"
+  ],
+  "target": "booking_complete",
+  "class_labels": [
+    0,
+    1
+  ],
+  "n_rows": 1200
+}

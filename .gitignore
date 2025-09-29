@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+pip-wheel-metadata/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and models
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
+!models/pipeline.pkl
+!models/feature_info.json
