@@ -32,16 +32,16 @@
     "loyalty_status": "string"
   },
   "descriptions": {
-    "age": "Value for 'age'",
-    "advance_purchase_days": "Value for 'advance_purchase_days'",
-    "trip_type": "Trip type (e.g. OneWay or Return)",
-    "channel": "Value for 'channel'",
-    "country": "Value for 'country'",
-    "loyalty_status": "Value for 'loyalty_status'",
-    "basket_price": "Value for 'basket_price'",
-    "seats": "Value for 'seats'",
-    "weekend": "Value for 'weekend'",
-    "previous_cancellations": "Value for 'previous_cancellations'"
+    "age": "Value for 'age'.",
+    "advance_purchase_days": "Value for 'advance_purchase_days'.",
+    "trip_type": "Trip type (e.g., OneWay or Return).",
+    "channel": "Value for 'channel'.",
+    "country": "Value for 'country'.",
+    "loyalty_status": "Value for 'loyalty_status'.",
+    "basket_price": "Value for 'basket_price'.",
+    "seats": "Value for 'seats'.",
+    "weekend": "Value for 'weekend'.",
+    "previous_cancellations": "Value for 'previous_cancellations'."
   },
   "categorical_options": {
     "trip_type": [
