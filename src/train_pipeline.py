@@ -11,19 +11,19 @@ TARGET_COL = "booking_complete"
 MAX_CAT_OPTIONS = 50
 
 HUMAN_READABLE = {
-    "num_passengers": "Number of passengers on the booking (integer)",
-    "sales_channel": "Sales channel used to book (e.g. Web, Mobile, Agent)",
-    "trip_type": "Trip type (e.g. OneWay or Return)",
-    "purchase_lead": "Days between purchase date and flight date (integer)",
-    "length_of_stay": "Days between outbound and return (integer)",
-    "flight_hour": "Hour of flight departure (0–23)",
-    "flight_day": "Day of week of the flight (e.g. Monday)",
-    "route": "Route or origin–destination pair",
-    "booking_origin": "Country or market where booking was made",
-    "wants_extra_baggage": "Customer wants extra baggage (0 or 1)",
-    "wants_preferred_seat": "Customer wants preferred seat (0 or 1)",
-    "wants_in_flight_meals": "Customer wants in-flight meals (0 or 1)",
-    "flight_duration": "Flight duration in hours",
+    "num_passengers": "Number of passengers on the booking (integer).",
+    "sales_channel": "Sales channel used to book (e.g., Web, Mobile, Agent).",
+    "trip_type": "Trip type (e.g., OneWay or Return).",
+    "purchase_lead": "Days between purchase date and flight date (integer).",
+    "length_of_stay": "Days between outbound and return (integer).",
+    "flight_hour": "Hour of flight departure (0–23).",
+    "flight_day": "Day of week of the flight (e.g., Monday).",
+    "route": "Route or origin–destination pair (e.g., LHR-JFK).",
+    "booking_origin": "Country or market where booking was made.",
+    "wants_extra_baggage": "Customer wants extra baggage (0 or 1).",
+    "wants_preferred_seat": "Customer wants preferred seat (0 or 1).",
+    "wants_in_flight_meals": "Customer wants in-flight meals (0 or 1).",
+    "flight_duration": "Flight duration in hours (numeric).",
 }
 
 def build_schema_extras(df: pd.DataFrame, schema: FeatureSchema):
@@ -38,15 +38,14 @@ def build_schema_extras(df: pd.DataFrame, schema: FeatureSchema):
     for c in list(df.columns):
         if c == schema.target:
             continue
-        desc[c] = HUMAN_READABLE.get(c, f"Value for '{c}'")
+        desc[c] = HUMAN_READABLE.get(c, f"Value for '{c}'.")
     schema.descriptions = desc
 
     opts = {}
     for c in schema.categorical:
         vals = df[c].astype(str).dropna().unique().tolist()
         if len(vals) > MAX_CAT_OPTIONS:
-            top = df[c].astype(str).value_counts().head(MAX_CAT_OPTIONS).index.tolist()
-            vals = top
+            vals = df[c].astype(str).value_counts().head(MAX_CAT_OPTIONS).index.tolist()
         opts[c] = vals
     schema.categorical_options = opts
 
