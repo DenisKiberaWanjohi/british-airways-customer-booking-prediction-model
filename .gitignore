@@ -14,8 +14,6 @@ pip-wheel-metadata/
 .ipynb_checkpoints/
 
 # Data and models
-data/*
-!data/.gitkeep
 models/*
 !models/.gitkeep
 
