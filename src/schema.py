@@ -1,6 +1,7 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from pathlib import Path
 import json
+from typing import Dict, List
 
 SCHEMA_PATH = Path("models/feature_info.json")
 
@@ -11,6 +12,9 @@ class FeatureSchema:
     target: str
     class_labels: list
     n_rows: int | None = None
+    dtypes: Dict[str, str] = field(default_factory=dict)
+    descriptions: Dict[str, str] = field(default_factory=dict)
+    categorical_options: Dict[str, List[str]] = field(default_factory=dict)
 
     def save(self, path: Path = SCHEMA_PATH):
         path.parent.mkdir(parents=True, exist_ok=True)

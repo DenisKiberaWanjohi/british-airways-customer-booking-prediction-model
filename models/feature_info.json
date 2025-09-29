@@ -18,5 +18,55 @@
     0,
     1
   ],
-  "n_rows": 1200
+  "n_rows": 1200,
+  "dtypes": {
+    "age": "number",
+    "advance_purchase_days": "number",
+    "basket_price": "number",
+    "seats": "number",
+    "weekend": "number",
+    "previous_cancellations": "number",
+    "trip_type": "string",
+    "channel": "string",
+    "country": "string",
+    "loyalty_status": "string"
+  },
+  "descriptions": {
+    "age": "Value for 'age'",
+    "advance_purchase_days": "Value for 'advance_purchase_days'",
+    "trip_type": "Trip type (e.g. OneWay or Return)",
+    "channel": "Value for 'channel'",
+    "country": "Value for 'country'",
+    "loyalty_status": "Value for 'loyalty_status'",
+    "basket_price": "Value for 'basket_price'",
+    "seats": "Value for 'seats'",
+    "weekend": "Value for 'weekend'",
+    "previous_cancellations": "Value for 'previous_cancellations'"
+  },
+  "categorical_options": {
+    "trip_type": [
+      "Return",
+      "OneWay"
+    ],
+    "channel": [
+      "Agent",
+      "Web",
+      "Mobile"
+    ],
+    "country": [
+      "AU",
+      "US",
+      "CA",
+      "FR",
+      "DE",
+      "UK"
+    ],
+    "loyalty_status": [
+      "Bronze",
+      "nan",
+      "Blue",
+      "Silver",
+      "Gold"
+    ]
+  }
 }
