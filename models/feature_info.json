@@ -24,33 +24,33 @@
   "n_rows": 50000,
   "dtypes": {
     "num_passengers": "number",
+    "sales_channel": "string",
+    "trip_type": "string",
     "purchase_lead": "number",
     "length_of_stay": "number",
     "flight_hour": "number",
+    "flight_day": "string",
+    "route": "string",
+    "booking_origin": "string",
     "wants_extra_baggage": "number",
     "wants_preferred_seat": "number",
     "wants_in_flight_meals": "number",
-    "flight_duration": "number",
-    "sales_channel": "string",
-    "trip_type": "string",
-    "flight_day": "string",
-    "route": "string",
-    "booking_origin": "string"
+    "flight_duration": "number"
   },
   "descriptions": {
-    "num_passengers": "Number of passengers on the booking (integer).",
-    "sales_channel": "Sales channel used to book (e.g., Web, Mobile, Agent).",
-    "trip_type": "Trip type (e.g., OneWay or Return).",
-    "purchase_lead": "Days between purchase date and flight date (integer).",
-    "length_of_stay": "Days between outbound and return (integer).",
-    "flight_hour": "Hour of flight departure (0\u201323).",
-    "flight_day": "Day of week of the flight (e.g., Monday).",
-    "route": "Route or origin\u2013destination pair (e.g., LHR-JFK).",
-    "booking_origin": "Country or market where booking was made.",
-    "wants_extra_baggage": "Customer wants extra baggage (0 or 1).",
-    "wants_preferred_seat": "Customer wants preferred seat (0 or 1).",
-    "wants_in_flight_meals": "Customer wants in-flight meals (0 or 1).",
-    "flight_duration": "Flight duration in hours (numeric)."
+    "num_passengers": "Number of passengers on the booking. Integer.",
+    "sales_channel": "Sales channel used to book. For example Web, Mobile, Agent.",
+    "trip_type": "Trip type. For example OneWay or RoundTrip.",
+    "purchase_lead": "Days between purchase date and flight date. Integer in days.",
+    "length_of_stay": "Days between outbound and return. Integer in days.",
+    "flight_hour": "Hour of departure. Integer from 0 to 23.",
+    "flight_day": "Day of week of the flight. For example Mon, Tue, Sat.",
+    "route": "Route or origin\u2013destination pair. For example LHR-JFK.",
+    "booking_origin": "Country or market where the booking was made.",
+    "wants_extra_baggage": "Customer wants extra baggage. 1 = Yes, 0 = No.",
+    "wants_preferred_seat": "Customer wants a preferred seat. 1 = Yes, 0 = No.",
+    "wants_in_flight_meals": "Customer wants in-flight meals. 1 = Yes, 0 = No.",
+    "flight_duration": "Flight duration in hours. Decimal number."
   },
   "categorical_options": {
     "sales_channel": [
@@ -59,17 +59,17 @@
     ],
     "trip_type": [
       "RoundTrip",
-      "CircleTrip",
-      "OneWay"
+      "OneWay",
+      "CircleTrip"
     ],
     "flight_day": [
-      "Sat",
-      "Wed",
-      "Thu",
       "Mon",
-      "Sun",
+      "Wed",
       "Tue",
-      "Fri"
+      "Thu",
+      "Fri",
+      "Sun",
+      "Sat"
     ],
     "route": [
       "AKLKUL",
