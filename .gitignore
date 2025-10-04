@@ -22,6 +22,6 @@ models/*
 Thumbs.db
 
 # Streamlit
-.streamlit/
-!models/pipeline.pkl
-!models/feature_info.json
+#.streamlit/
+#!models/pipeline.pkl
+#!models/feature_info.json
