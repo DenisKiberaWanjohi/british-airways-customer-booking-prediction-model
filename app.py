@@ -141,21 +141,30 @@ with tab1:
     inputs = {}
 
     with left:
+        # Binary fields as explicit 0 or 1
         for col in sorted(BINARY_FIELDS):
             help_txt = desc(schema, col)
             yn = st.selectbox(col, options=["No", "Yes"], help=help_txt)
             inputs[col] = 1 if yn == "Yes" else 0
 
+        # Categorical fields
         for col in categorical_ui:
             help_txt = desc(schema, col)
             opts = getattr(schema, "categorical_options", {}).get(col, [])
             if len(opts) > 0:
-                opts = sorted([str(x) for x in opts])
-                inputs[col] = st.selectbox(col, options=opts, help=help_txt)
+                # Keep original dtypes for the selected value
+                options = sorted(opts, key=lambda x: str(x))
+                inputs[col] = st.selectbox(
+                    col,
+                    options=options,
+                    format_func=lambda x: str(x),
+                    help=help_txt,
+                )
             else:
                 inputs[col] = st.text_input(col, value="", help=help_txt)
 
     with right:
+        # Numeric fields with proper types
         for col in numeric_ui:
             help_txt = desc(schema, col)
             if col == "flight_hour":
@@ -169,32 +178,43 @@ with tab1:
                 inputs[col] = float(val)
 
         if st.button("Predict"):
+            # Build one row, enforce schema types, then predict
             X = prepare_inference_df(inputs, numeric_all, categorical_all)
-            pred = int(pipe.predict(X)[0])
-            proba_fn = getattr(pipe, "predict_proba", None)
-            proba = proba_fn(X) if callable(proba_fn) else None
+            X = enforce_types(X, numeric_all, categorical_all)
 
-            st.subheader("Prediction")
-            if len(class_labels) == 2 and proba is not None:
-                pos_index = class_labels.index(1) if 1 in class_labels else 1
-                pos_prob = float(proba[0][pos_index])
-                msg = "The customer is likely to complete the booking." if pred == 1 else "The customer is unlikely to complete the booking."
-                st.markdown(f"**{msg}**  Estimated probability of completion: **{pos_prob:.2%}**")
-            else:
-                st.markdown(f"**Predicted class:** {label_map.get(pred, str(pred))}")
+            try:
+                pred = int(pipe.predict(X)[0])
+                proba_fn = getattr(pipe, "predict_proba", None)
+                proba = proba_fn(X) if callable(proba_fn) else None
 
-            if proba is not None:
-                probs = proba[0]
-                labels = [label_map.get(c, str(c)) for c in class_labels]
-                fig = plt.figure()
-                plt.pie(probs, labels=labels, autopct="%1.1f%%", startangle=90)
-                plt.title("Prediction probabilities")
-                plt.axis("equal")
-                st.pyplot(fig)
+                st.subheader("Prediction")
+                if len(class_labels) == 2 and proba is not None:
+                    pos_index = class_labels.index(1) if 1 in class_labels else 1
+                    pos_prob = float(proba[0][pos_index])
+                    msg = "The customer is likely to complete the booking." if pred == 1 else "The customer is unlikely to complete the booking."
+                    st.markdown(f"**{msg}**  Estimated probability of completion: **{pos_prob:.2%}**")
+                else:
+                    st.markdown(f"**Predicted class:** {label_map.get(pred, str(pred))}")
+
+                if proba is not None:
+                    probs = proba[0]
+                    labels = [label_map.get(c, str(c)) for c in class_labels]
+                    fig = plt.figure()
+                    plt.pie(probs, labels=labels, autopct="%1.1f%%", startangle=90)
+                    plt.title("Prediction probabilities")
+                    plt.axis("equal")
+                    st.pyplot(fig)
+
+            except Exception as e:
+                st.error("Prediction failed")
+                st.exception(e)
+                st.write("Debug dtypes:", X.dtypes.astype(str).to_dict())
+                st.write("Debug row:", X.iloc[0].to_dict())
+                st.stop()
 
 # ---------------- Batch prediction ----------------
 with tab2:
-    st.write("Upload a CSV. The **first row must contain the column names** shown below, in any order:")
+    st.write("Upload a CSV. The first row must contain the column names shown below, in any order.")
     st.caption(", ".join(EXPECTED_COLS))
     f = st.file_uploader("CSV file", type=["csv", "xls", "xlsx"])
     if f:
@@ -219,7 +239,7 @@ with tab2:
                     out["probability"] = (probas[:, pos_index] * 100).round(1).astype(str) + "%"
                 else:
                     pred_indices = [list(class_labels).index(p) for p in preds]
-                    out["probability"] = [(probas[i, j] * 100).round(1).astype(str) + "%" for i, j in enumerate(pred_indices)]
+                    out["probability"] = [f"{probas[i, j]*100:.1f}%" for i, j in enumerate(pred_indices)]
             else:
                 out["probability"] = np.nan
 

@@ -21,7 +21,4 @@ models/*
 .DS_Store
 Thumbs.db
 
-# Streamlit
-#.streamlit/
-#!models/pipeline.pkl
-#!models/feature_info.json
+
