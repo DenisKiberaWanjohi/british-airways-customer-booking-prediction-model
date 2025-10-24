@@ -50,15 +50,7 @@ ba-booking-prediction/
 
 Expected file: `data/customer_booking.csv`. The default target is `booking_complete` with values 0 or 1. Adjust the `TARGET_COL` in `src/train_pipeline.py` if your column differs.
 
-## Train the model
-
-```bash
-python src/train_pipeline.py
-```
-This script:
-- auto-detects numeric and categorical features
-- builds a ColumnTransformer + RandomForestClassifier inside a single Pipeline
-- saves `models/pipeline.pkl` and `models/feature_info.json`
+## Using the UI
 
 You can enter values in a form for a single prediction or upload a CSV for batch predictions. The app uses the saved pipeline, so run training first if the artifacts are missing.
 
@@ -72,8 +64,4 @@ This repo includes a trained example model so the app runs immediately:
 **Author:** Denis Wanjohi (deniskibera7@gmail.com)
 Built as part of the British Airways Data Science Job Simulation on Forage.
 
-To retrain on your real dataset, replace `data/customer_booking.csv` and run:
 
-```bash
-python src/train_pipeline.py
-```
